@@ -8,9 +8,7 @@ from django.conf import settings
 from requests import Session
 from requests.exceptions import HTTPError
 
-ENCODING = "utf-8"
 MAX_WORKERS = 5
-REQUEST_TIMEOUT = 30
 
 
 def verify_captcha(response: str, user_ip: str) -> bool:
