@@ -8,17 +8,17 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "^5.0"
-lxml = "^5.1"
-requests = "^2.24"
+django = "~5.0"
+lxml = "~5.2"
+requests = "~2.31"
 
 
 [tool.poetry.group.deploy.dependencies]
-uvicorn = "^0.29"
+uvicorn = "~0.29"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.1"
+black = "~24.3"
 
 [build-system]
 requires = ["poetry-core"]
