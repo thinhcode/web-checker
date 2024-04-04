@@ -31,9 +31,9 @@ def verify_captcha(response: str, user_ip: str) -> bool:
     }
 
     try:
-        verify = requests.post(url=url, data=data)
-        result: dict = verify.json()
-        return result.get("success")
+        r = requests.post(url=url, data=data)
+        result: dict = r.json()
+        return result["success"]
     except HTTPError | JSONDecodeError as e:
         print(f"Failed to verify reCAPTCHA: {e}")
         return False
@@ -128,3 +128,28 @@ def get_broken_links(client: Session, links: list[str]) -> Optional[list[str]]:
                 broken_links.append(future.result())
 
     return broken_links if broken_links else None
+
+
+def get_page_rank(client: Session, domain: str) -> int:
+    """
+    Retrieves the page rank for a given domain using the OpenPageRank API.
+
+    :param client: The session client to make HTTP requests.
+    :param domain: A domain name.
+    :return: The page rank, or 0 if the request fails.
+    """
+    if settings.DEBUG:
+        print("Skipping page rank retrieval in debug mode.")
+        return 0
+
+    url = "https://openpagerank.com/api/v1.0/getPageRank?domains[0]=" + domain
+    headers = {"API-OPR": settings.OPEN_PAGERANK_KEY}
+    try:
+        r = client.get(url, headers=headers)
+        result: dict = r.json()["response"][0]
+        if result["status_code"] == 200:
+            return int(result["rank"])
+    except HTTPError as e:
+        print(f"Failed to get page rank: {e}")
+
+    return 0
