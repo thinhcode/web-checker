@@ -167,5 +167,9 @@ class Parser:
         return self._xpath_tags("//@style/..")
 
     @property
+    def images(self) -> Optional[list[str]]:
+        return self._xpath_tags("//img")
+
+    @property
     def images_miss_alt(self) -> Optional[list[str]]:
         return self._xpath_tags("//img[not(@alt)]")
