@@ -6,7 +6,7 @@ from typing import Optional
 import requests
 from django.conf import settings
 from requests import Session
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, RequestException
 
 MAX_WORKERS = 5
 
@@ -34,7 +34,7 @@ def verify_captcha(response: str, user_ip: str) -> bool:
         r = requests.post(url=url, data=data)
         result: dict = r.json()
         return result["success"]
-    except HTTPError | JSONDecodeError as e:
+    except (HTTPError, JSONDecodeError) as e:
         print(f"Failed to verify reCAPTCHA: {e}")
         return False
 
@@ -109,9 +109,13 @@ def check_broken_link(client: Session, link: str) -> Optional[str]:
         return None
     except HTTPError:
         return link
+    except RequestException:
+        pass
 
 
-def get_broken_links(client: Session, links: list[str]) -> Optional[list[str]]:
+def get_broken_links(
+    client: Session, links: Optional[list[str]]
+) -> Optional[list[str]]:
     """
     Retrieves a list of broken links from a given list of links using a thread pool executor.
 
@@ -119,6 +123,9 @@ def get_broken_links(client: Session, links: list[str]) -> Optional[list[str]]:
     :param links: A list of links to check for broken links.
     :return: A list of broken links, or None if no broken links are found.
     """
+    if not links:
+        return None
+
     broken_links: list[str] = list()
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:

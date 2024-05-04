@@ -153,6 +153,9 @@ class Parser:
         page_links: list[str] = list()
 
         links = self._xpath("//a/@href", multiple=True)
+        if not links:
+            return None
+
         for link in links:
             link = link.strip()
             if not self._is_page_link(link):
