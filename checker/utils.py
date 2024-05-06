@@ -57,9 +57,7 @@ def get_robots_link(client: Session, base_url: str) -> Optional[str]:
         return None
 
 
-def get_sitemap_links(
-    client: Session, base_url: str, robots_url: str
-) -> Optional[list[str]]:
+def get_sitemap_links(client: Session, base_url: str, robots_url: str) -> Optional[list[str]]:
     """
     Get sitemap links from the provided base URL and robots URL.
 
@@ -113,9 +111,7 @@ def check_broken_link(client: Session, link: str) -> Optional[str]:
         pass
 
 
-def get_broken_links(
-    client: Session, links: Optional[list[str]]
-) -> Optional[list[str]]:
+def get_broken_links(client: Session, links: Optional[list[str]]) -> Optional[list[str]]:
     """
     Retrieves a list of broken links from a given list of links using a thread pool executor.
 

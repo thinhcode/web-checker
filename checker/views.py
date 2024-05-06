@@ -35,9 +35,7 @@ class CheckView(TemplateView):
     def post(self, request):
         url = request.POST["url"]
 
-        if not verify_captcha(
-            request.POST["g-recaptcha-response"], request.META["REMOTE_ADDR"]
-        ):
+        if not verify_captcha(request.POST["g-recaptcha-response"], request.META["REMOTE_ADDR"]):
             messages.info(request, url)
             messages.error(request, "* Bạn chưa được kiểm tra không phải là robot!")
             return redirect("/")
@@ -65,16 +63,12 @@ class CheckView(TemplateView):
                 "brokenLinks": get_broken_links(client, parsed.anchors),
                 "anchors": parsed.anchors,
             }
-            context["sitemaps"] = get_sitemap_links(
-                client, base_url, context["robotsTxt"]
-            )
+            context["sitemaps"] = get_sitemap_links(client, base_url, context["robotsTxt"])
             return render(request, self.template_name, context)
         except HTTPError as e:
             print(f"Failed to get URL: {e}")
             messages.info(request, url)
-            messages.error(
-                request, "* Không phân tích được URL. Vui lòng kiểm tra lại!"
-            )
+            messages.error(request, "* Không phân tích được URL. Vui lòng kiểm tra lại!")
             return redirect("/")
         finally:
             client.close()

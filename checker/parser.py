@@ -19,9 +19,7 @@ class Parser:
         :param base_url: The base URL for the content.
         """
         html_parser = etree.HTMLParser(encoding=ENCODING)
-        self.content = etree.fromstring(
-            text=content, parser=html_parser, base_url=base_url
-        )
+        self.content = etree.fromstring(text=content, parser=html_parser, base_url=base_url)
         self.base_url = base_url
 
         if self.content is None:
@@ -56,17 +54,13 @@ class Parser:
 
         tags: list[str] = list()
         for element in elements:
-            tag = etree.tostring(
-                element, encoding=ENCODING, method=self.METHOD_HTML
-            ).decode(ENCODING)
+            tag = etree.tostring(element, encoding=ENCODING, method=self.METHOD_HTML).decode(ENCODING)
             tags.append(re.search(r"<.*?>", tag).group())
 
         return tags if tags else None
 
     @staticmethod
-    def _clean_headings(
-        level: int, headings: list[str]
-    ) -> tuple[int, Optional[list[str]]]:
+    def _clean_headings(level: int, headings: list[str]) -> tuple[int, Optional[list[str]]]:
         """
         Cleans the given list of headings by removing any empty or whitespace-only headings.
 

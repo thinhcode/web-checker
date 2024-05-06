@@ -5,6 +5,7 @@ description = "The web application that checks a website's SEO score."
 authors = ["Thinh Nguyen Phuoc <npthinh1996@gmail.com>"]
 license = "GPL-3.0"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -19,6 +20,10 @@ uvicorn = "~0.29"
 
 [tool.poetry.group.dev.dependencies]
 black = "~24.4"
+
+[tool.black]
+line-length = 120
+target-version = ["py312"]
 
 [build-system]
 requires = ["poetry-core"]
