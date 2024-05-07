@@ -8,16 +8,17 @@ from django.conf import settings
 from requests import Session
 from requests.exceptions import HTTPError, RequestException
 
+ENCODING: str = "utf-8"
 MAX_WORKERS = 5
 
 
 def verify_captcha(response: str, user_ip: str) -> bool:
     """
-    Verifies the reCAPTCHA response using the Google reCAPTCHA API.
+    Verifies the reCAPTCHA response.
 
-    :param response: The reCAPTCHA response token provided by the user.
-    :param user_ip: The IP address of the user submitting the reCAPTCHA.
-    :return: True if the reCAPTCHA verification is successful, False otherwise.
+    :param response: Response from reCAPTCHA.
+    :param user_ip: User's IP address.
+    :return: True if the response is valid, False otherwise.
     """
     if settings.DEBUG:
         print("Skipping reCAPTCHA verification in debug mode.")
@@ -41,11 +42,11 @@ def verify_captcha(response: str, user_ip: str) -> bool:
 
 def get_robots_link(client: Session, base_url: str) -> Optional[str]:
     """
-    Retrieves the URL of the robots.txt file for a given base URL using the provided HTTP client.
+    Get robots.txt link.
 
-    :param client: The session client to make HTTP requests.
-    :param base_url: The base URL to construct the robots.txt file.
-    :return: The URL of the robots.txt file if it exists and can be accessed, None otherwise.
+    :param client: Client sessions.
+    :param base_url: Base URL.
+    :return: robots.txt link if successful, None otherwise.
     """
     robots_url = base_url + "/robots.txt"
     try:
@@ -59,12 +60,12 @@ def get_robots_link(client: Session, base_url: str) -> Optional[str]:
 
 def get_sitemap_links(client: Session, base_url: str, robots_url: str) -> Optional[list[str]]:
     """
-    Get sitemap links from the provided base URL and robots URL.
+    Get sitemap links.
 
-    :param client: The session client to make HTTP requests.
-    :param base_url: The base URL to construct the sitemap URL.
-    :param robots_url: The URL to fetch robots.txt content.
-    :return: A list of sitemap URLs if successful, None otherwise.
+    :param client: Client sessions.
+    :param base_url: Base URL.
+    :param robots_url: robots.txt link.
+    :return: Sitemap links if successful, None otherwise.
     """
     sitemap_url = base_url + "/sitemap.xml"
     try:
@@ -95,11 +96,11 @@ def get_sitemap_links(client: Session, base_url: str, robots_url: str) -> Option
 
 def check_broken_link(client: Session, link: str) -> Optional[str]:
     """
-    Check if a given link is broken by sending a HEAD request to the link using the provided session.
+    Check if a link is broken.
 
-    :param client: The session client to make HTTP requests.
-    :param link: The link to be checked.
-    :return: If the link is broken, returns the link itself. Otherwise, returns None.
+    :param client: Client sessions.
+    :param link: Link to check.
+    :return: Link if it is broken, None otherwise.
     """
     try:
         r = client.head(link)
@@ -113,11 +114,11 @@ def check_broken_link(client: Session, link: str) -> Optional[str]:
 
 def get_broken_links(client: Session, links: Optional[list[str]]) -> Optional[list[str]]:
     """
-    Retrieves a list of broken links from a given list of links using a thread pool executor.
+    Get a list of broken links.
 
-    :param client: The session client to make HTTP requests.
-    :param links: A list of links to check for broken links.
-    :return: A list of broken links, or None if no broken links are found.
+    :param client: Client sessions.
+    :param links: List of links to check.
+    :return: List of links if broken, None otherwise.
     """
     if not links:
         return None
@@ -135,11 +136,11 @@ def get_broken_links(client: Session, links: Optional[list[str]]) -> Optional[li
 
 def get_page_rank(client: Session, domain: str) -> int:
     """
-    Retrieves the page rank for a given domain using the OpenPageRank API.
+    Get the page rank of a domain.
 
-    :param client: The session client to make HTTP requests.
-    :param domain: A domain name.
-    :return: The page rank, or 0 if the request fails.
+    :param client: Client sessions.
+    :param domain: Domain to check.
+    :return: Page rank if found, 0 otherwise.
     """
     if settings.DEBUG:
         print("Skipping page rank retrieval in debug mode.")
