@@ -55,7 +55,8 @@ class Parser:
         tags: list[str] = list()
         for element in elements:
             tag = etree.tostring(element, encoding=ENCODING, method=self.METHOD_HTML).decode(ENCODING)
-            tags.append(re.search(r"<.*?>", tag).group())
+            if tag_match := re.search(r"<.*?>", tag):
+                tags.append(tag_match.group())
 
         return tags if tags else None
 
