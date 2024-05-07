@@ -127,7 +127,7 @@
         <tr>
           <th scope="row">Thẻ h1</th>
           <td class="text-center">
-            {% if h1Tags %}
+            {% if headings.1 %}
             <i class="fas fa-check-circle text-success"></i>
             {% else %}
             <i class="fas fa-times-circle text-danger"></i>
@@ -135,9 +135,9 @@
             <input type="hidden" class="point" value="5">
           </td>
           <td>
-            {% if h1Tags %}
-            <div>Tìm thấy <b>{{ h1Tags|length }}</b> thẻ h1 trên trang của bạn.</div>
-            <small>{% for h1Tag in h1Tags %}<i class="fas fa-angle-double-right"></i> {{ h1Tag }}<br>{% endfor %}</small>
+            {% if headings.1 %}
+            <div>Tìm thấy <b>{{ headings.1|length }}</b> thẻ h1 trên trang của bạn.</div>
+            <small>{% for h1Tag in headings.1 %}<i class="fas fa-angle-double-right"></i> {{ h1Tag }}<br>{% endfor %}</small>
             {% else %}
             <div>Không tìm thấy thẻ h1 trên trang của bạn.</div>
             <small><i class="fas fa-angle-double-right"></i><em> None</em></small>
@@ -148,7 +148,7 @@
         <tr>
           <th scope="row">Thẻ h2</th>
           <td class="text-center">
-            {% if h2Tags %}
+            {% if headings.2 %}
             <i class="fas fa-check-circle text-success"></i>
             {% else %}
             <i class="fas fa-times-circle text-danger"></i>
@@ -156,9 +156,9 @@
             <input type="hidden" class="point" value="4">
           </td>
           <td>
-            {% if h2Tags %}
-            <div>Tìm thấy <b>{{ h2Tags|length }}</b> thẻ h2 trên trang của bạn.</div>
-            <small>{% for h2Tag in h2Tags %}<i class="fas fa-angle-double-right"></i> {{ h2Tag }}<br>{% endfor %}</small>
+            {% if headings.2 %}
+            <div>Tìm thấy <b>{{ headings.2|length }}</b> thẻ h2 trên trang của bạn.</div>
+            <small>{% for h2Tag in headings.2 %}<i class="fas fa-angle-double-right"></i> {{ h2Tag }}<br>{% endfor %}</small>
             {% else %}
             <div>Không tìm thấy thẻ h2 trên trang của bạn.</div>
             <small><i class="fas fa-angle-double-right"></i><em> None</em></small>
@@ -211,28 +211,28 @@
         <tr>
           <th scope="row">Lỗi liên kết</th>
           <td class="text-center">
-            {% if aBrokens|length == 0 %}
+            {% if brokenLinks|length == 0 %}
             <i class="fas fa-check-circle text-success"></i>
             {% else %}
             <i class="fas fa-times-circle text-danger"></i>
             {% endif %}
-            <input type="hidden" class="point" value="{% widthratio aBrokens|length aTags|length 5 %}">
+            <input type="hidden" class="point" value="{% widthratio brokenLinks|length anchors|length 5 %}">
           </td>
           <td>
-            {% if aBrokens|length > 0 %}
-            <div>Tìm thấy <b>{{ aBrokens|length }}</b> trong số <b>{{ aTags|length }}</b> liên kết bị lỗi trên trang của bạn.</div>
-            <small>{% for aBroken in aBrokens %}<i class="fas fa-angle-double-right"></i> {{ aBroken }}<br>{% endfor %}</small>
+            {% if brokenLinks|length > 0 %}
+            <div>Tìm thấy <b>{{ brokenLinks|length }}</b> trong số <b>{{ anchors|length }}</b> liên kết bị lỗi trên trang của bạn.</div>
+            <small>{% for link in brokenLinks %}<i class="fas fa-angle-double-right"></i> {{ link }}<br>{% endfor %}</small>
             {% else %}
-            <div>Không tìm thấy lỗi trong số <b>{{ aTags|length }}</b> liên kết trên trang của bạn.</div>
+            <div>Không tìm thấy lỗi trong số <b>{{ anchors|length }}</b> liên kết trên trang của bạn.</div>
             <small><i class="fas fa-angle-double-right"></i><em> None</em></small>
             {% endif %}
           </td>
         </tr>
-        <!-- CSS inlines -->
+        <!-- Inline CSS -->
         <tr>
           <th scope="row">CSS nội tuyến</th>
           <td class="text-center">
-            {% if cssInlines|length == 0 %}
+            {% if inlineCSS|length == 0 %}
             <i class="fas fa-check-circle text-success"></i>
             {% else %}
             <i class="fas fa-times-circle text-danger"></i>
@@ -240,32 +240,32 @@
             <input type="hidden" class="point" value="3">
           </td>
           <td>
-            {% if cssInlines|length > 0 %}
-            <div>Tìm thấy <b>{{ cssInlines|length }}</b> thuộc tính css nội tuyến trên trang của bạn.</div>
-            <small>{% for cssInline in cssInlines %}<i class="fas fa-angle-double-right"></i> {{ cssInline }}<br>{% endfor %}</small>
+            {% if inlineCSS|length > 0 %}
+            <div>Tìm thấy <b>{{ inlineCSS|length }}</b> thuộc tính css nội tuyến trên trang của bạn.</div>
+            <small class="overflow-auto" style="height: 500px">{% for css in inlineCSS %}<i class="fas fa-angle-double-right"></i> {{ css }}<br>{% endfor %}</small>
             {% else %}
             <div>Không tìm thấy thuộc tính css nội tuyến trên trang của bạn.</div>
             <small><i class="fas fa-angle-double-right"></i><em> None</em></small>
             {% endif %}
           </td>
         </tr>
-        <!-- Alt attribute -->
+        <!-- Image alt attribute -->
         <tr>
           <th scope="row">Thuộc tính alt</th>
           <td class="text-center">
-            {% if missAlts|length == 0 %}
+            {% if imagesMissAlt|length == 0 %}
             <i class="fas fa-check-circle text-success"></i>
             {% else %}
             <i class="fas fa-times-circle text-danger"></i>
             {% endif %}
-            <input type="hidden" class="point" value="{% widthratio missAlts|length imgTags|length 5 %}">
+            <input type="hidden" class="point" value="{% widthratio imagesMissAlt|length images|length 5 %}">
           </td>
           <td>
-            {% if missAlts|length > 0 %}
-            <div>Tìm thấy <b>{{ missAlts|length }}</b> trong số <b>{{ imgTags|length }}</b> thẻ img bị thiếu thuộc tính alt trên trang của bạn.</div>
-            <small>{% for missAlt in missAlts %}<i class="fas fa-angle-double-right"></i> {{ missAlt }}<br>{% endfor %}</small>
+            {% if imagesMissAlt|length > 0 %}
+            <div>Tìm thấy <b>{{ imagesMissAlt|length }}</b> trong số <b>{{ images|length }}</b> thẻ img bị thiếu thuộc tính alt trên trang của bạn.</div>
+            <small>{% for image in imagesMissAlt %}<i class="fas fa-angle-double-right"></i> {{ image }}<br>{% endfor %}</small>
             {% else %}
-            <div>Không tìm thấy lỗi trong số <b>{{ imgTags|length }}</b> thẻ img trên trang của bạn.</div>
+            <div>Không tìm thấy lỗi trong số <b>{{ images|length }}</b> thẻ img trên trang của bạn.</div>
             <small><i class="fas fa-angle-double-right"></i><em> None</em></small>
             {% endif %}
           </td>

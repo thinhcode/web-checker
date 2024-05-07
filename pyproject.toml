@@ -5,20 +5,25 @@ description = "The web application that checks a website's SEO score."
 authors = ["Thinh Nguyen Phuoc <npthinh1996@gmail.com>"]
 license = "GPL-3.0"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "^5.0"
-lxml = "^4.5"
-requests = "^2.24"
+django = "~5.0"
+lxml = "~5.2"
+requests = "~2.31"
 
 
 [tool.poetry.group.deploy.dependencies]
-uvicorn = "^0.25"
+uvicorn = "~0.29"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.12"
+black = "~24.4"
+
+[tool.black]
+line-length = 120
+target-version = ["py312"]
 
 [build-system]
 requires = ["poetry-core"]
