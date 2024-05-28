@@ -21,9 +21,28 @@ uvicorn = "~0.29"
 [tool.poetry.group.dev.dependencies]
 black = "~24.4"
 
+
+[tool.poetry.group.test.dependencies]
+coverage = "~7.5"
+
 [tool.black]
 line-length = 120
 target-version = ["py312"]
+
+[tool.coverage.run]
+branch = true
+omit = [
+  "*/migrations/*",
+  "src/*",
+  "*/__init__.py",
+  "*/tests.py",
+  "manage.py",
+]
+source = ["."]
+
+[tool.coverage.report]
+skip_covered = true
+skip_empty = true
 
 [build-system]
 requires = ["poetry-core"]
