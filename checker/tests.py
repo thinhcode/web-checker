@@ -1,6 +1,11 @@
-from django.test import TestCase
+from json import JSONDecodeError
+from unittest.mock import MagicMock, patch
+
+from django.test import TestCase, override_settings
+from requests.exceptions import HTTPError
 
 from checker.parser import Parser
+from checker.utils import get_robots_link, get_sitemap_links, verify_captcha
 
 
 class ParserTests(TestCase):
@@ -119,3 +124,96 @@ class ParserTests(TestCase):
         # Not found
         parser = Parser(b"Images", self.base_url)
         self.assertIsNone(parser.images_miss_alt)
+
+
+class UtilsTest(TestCase):
+    def setUp(self) -> None:
+        self.base_url = "https://test.com"
+
+    @patch("checker.utils.requests")
+    def test_verify_captcha(self, mock_requests) -> None:
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"success": True}
+
+        mock_requests.post.return_value = mock_response
+        self.assertTrue(verify_captcha("response", "127.0.0.1"))
+
+    @patch("checker.utils.requests")
+    def test_verify_captcha_with_http_error(self, mock_requests) -> None:
+        mock_requests.post.side_effect = HTTPError()
+        self.assertFalse(verify_captcha("response", "127.0.0.1"))
+
+    @patch("checker.utils.requests")
+    def test_verify_captcha_with_json_error(self, mock_requests) -> None:
+        mock_response = MagicMock()
+        mock_response.json.side_effect = JSONDecodeError("", "", 0)
+
+        mock_requests.post.return_value = mock_response
+        self.assertFalse(verify_captcha("response", "127.0.0.1"))
+
+    @override_settings(DEBUG=True)
+    def test_verify_captcha_in_debug(self) -> None:
+        self.assertTrue(verify_captcha("response", "127.0.0.1"))
+
+    @patch("checker.utils.requests")
+    def test_get_robots_link(self, mock_requests) -> None:
+        self.assertEqual(get_robots_link(mock_requests, self.base_url), f"{self.base_url}/robots.txt")
+
+    def test_get_robots_link_with_http_error(self) -> None:
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = HTTPError()
+
+        mock_session = MagicMock()
+        mock_session.head.return_value = mock_response
+        self.assertEqual(get_robots_link(mock_session, self.base_url), None)
+
+    @patch("checker.utils.requests")
+    def test_get_sitemap_link(self, mock_requests) -> None:
+        self.assertListEqual(get_sitemap_links(mock_requests, self.base_url, None), [f"{self.base_url}/sitemap.xml"])
+
+    def test_get_sitemap_link_with_http_error(self) -> None:
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = HTTPError()
+
+        mock_session = MagicMock()
+        mock_session.head.return_value = mock_response
+        self.assertIsNone(get_sitemap_links(mock_session, self.base_url, None))
+
+    def test_get_sitemap_link_from_robots_url(self) -> None:
+        mock_head_response = MagicMock()
+        mock_head_response.raise_for_status.side_effect = HTTPError()
+
+        mock_session = MagicMock()
+        mock_session.head.return_value = mock_head_response
+
+        mock_get_response = MagicMock()
+        mock_get_response.text = f"Sitemap: {self.base_url}/sitemap1.xml\nSitemap: {self.base_url}/sitemap2.xml"
+        mock_session.get.return_value = mock_get_response
+        self.assertListEqual(
+            get_sitemap_links(mock_session, self.base_url, f"{self.base_url}/robots.txt"),
+            [f"{self.base_url}/sitemap1.xml", f"{self.base_url}/sitemap2.xml"],
+        )
+
+    def test_get_sitemap_link_from_robots_url_with_empty_sitemap(self) -> None:
+        mock_head_response = MagicMock()
+        mock_head_response.raise_for_status.side_effect = HTTPError()
+
+        mock_session = MagicMock()
+        mock_session.head.return_value = mock_head_response
+
+        mock_get_response = MagicMock()
+        mock_get_response.text = ""
+        mock_session.get.return_value = mock_get_response
+        self.assertIsNone(get_sitemap_links(mock_session, self.base_url, f"{self.base_url}/robots.txt"))
+
+    def test_get_sitemap_link_from_robots_url_with_http_error(self) -> None:
+        mock_head_response = MagicMock()
+        mock_head_response.raise_for_status.side_effect = HTTPError()
+
+        mock_session = MagicMock()
+        mock_session.head.return_value = mock_head_response
+
+        mock_get_response = MagicMock()
+        mock_get_response.raise_for_status.side_effect = HTTPError()
+        mock_session.get.return_value = mock_get_response
+        self.assertIsNone(get_sitemap_links(mock_session, self.base_url, f"{self.base_url}/robots.txt"))
