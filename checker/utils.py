@@ -58,7 +58,7 @@ def get_robots_link(client: Session, base_url: str) -> Optional[str]:
         return None
 
 
-def get_sitemap_links(client: Session, base_url: str, robots_url: str) -> Optional[list[str]]:
+def get_sitemap_links(client: Session, base_url: str, robots_url: Optional[str]) -> Optional[list[str]]:
     """
     Get sitemap links.
 
