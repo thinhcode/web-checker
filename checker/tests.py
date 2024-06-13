@@ -17,7 +17,7 @@ class ParserTestCase(TestCase):
         parser = Parser(b"<title>Title</title>", self.base_url)
         self.assertEqual(parser.title, "Title")
 
-        # Not found
+    def test_title_not_found(self) -> None:
         parser = Parser(b"Title", self.base_url)
         self.assertIsNone(parser.title)
 
@@ -25,7 +25,7 @@ class ParserTestCase(TestCase):
         parser = Parser(b"<meta name='description' content='Description'>", self.base_url)
         self.assertEqual(parser.description, "Description")
 
-        # Not found
+    def test_description_not_found(self) -> None:
         parser = Parser(b"Description", self.base_url)
         self.assertIsNone(parser.description)
 
@@ -33,7 +33,7 @@ class ParserTestCase(TestCase):
         parser = Parser(b"<link rel='icon' href='favicon.ico'>", self.base_url)
         self.assertEqual(parser.favicon, f"{self.base_url}/favicon.ico")
 
-        # Not found
+    def test_favicon_not_found(self) -> None:
         parser = Parser(b"Favicon", self.base_url)
         self.assertIsNone(parser.favicon)
 
@@ -41,7 +41,7 @@ class ParserTestCase(TestCase):
         parser = Parser(b"<meta name='robots' content='noindex, nofollow'>", self.base_url)
         self.assertEqual(parser.robots_meta, "noindex, nofollow")
 
-        # Not found
+    def test_robots_meta_not_found(self) -> None:
         parser = Parser(b"Robots", self.base_url)
         self.assertIsNone(parser.robots_meta)
 
@@ -67,20 +67,19 @@ class ParserTestCase(TestCase):
             },
         )
 
-        # Not found
+    def test_headings_not_found(self) -> None:
         parser = Parser(b"Headings", self.base_url)
         self.assertDictEqual(parser.headings, {1: None, 2: None, 3: None, 4: None, 5: None, 6: None})
 
-    def test_anchors(self) -> None:
-        # Internal links
+    def test_anchors_internal_links(self) -> None:
         parser = Parser(b"<a href='#'></a><a href='/'></a>", self.base_url)
         self.assertIsNone(parser.anchors)
 
-        # javascript, mailto, tel links
+    def test_anchors_javascript_mailto_tel_links(self) -> None:
         parser = Parser(b"<a href='javascript:'></a><a href='mailto:'></a><a href='tel:'></a>", self.base_url)
         self.assertIsNone(parser.anchors)
 
-        # Page link
+    def test_anchors_page_links(self) -> None:
         parser = Parser(
             b"<a href='https://test.com/page1'>"
             b"</a><a href='//test.com/page2'>"
@@ -91,11 +90,11 @@ class ParserTestCase(TestCase):
         for idx, anchor in enumerate(sorted(parser.anchors)):
             self.assertEqual(anchor, f"{self.base_url}/page{idx + 1}")
 
-        # Duplicate links
+    def test_anchors_duplicate_links(self) -> None:
         parser = Parser(b"<a href='page'></a><a href='page'></a>", self.base_url)
         self.assertListEqual(parser.anchors, [f"{self.base_url}/page"])
 
-        # Not found
+    def test_anchors_not_found(self) -> None:
         parser = Parser(b"Anchors", self.base_url)
         self.assertIsNone(parser.anchors)
 
@@ -103,7 +102,7 @@ class ParserTestCase(TestCase):
         parser = Parser(b"<div style='color:red'></div>", self.base_url)
         self.assertListEqual(parser.inline_css, ['<div style="color:red">'])
 
-        # Not found
+    def test_inline_css_not_found(self) -> None:
         parser = Parser(b"Inline CSS", self.base_url)
         self.assertIsNone(parser.inline_css)
 
@@ -111,7 +110,7 @@ class ParserTestCase(TestCase):
         parser = Parser(b"<img src='image.png'>", self.base_url)
         self.assertListEqual(parser.images, ['<img src="image.png">'])
 
-        # Not found
+    def test_images_not_found(self) -> None:
         parser = Parser(b"Images", self.base_url)
         self.assertIsNone(parser.images)
 
@@ -119,7 +118,7 @@ class ParserTestCase(TestCase):
         parser = Parser(b"<img src='image.png'>", self.base_url)
         self.assertListEqual(parser.images_miss_alt, ['<img src="image.png">'])
 
-        # Not found
+    def test_images_miss_alt_not_found(self) -> None:
         parser = Parser(b"Images", self.base_url)
         self.assertIsNone(parser.images_miss_alt)
 
