@@ -6,7 +6,7 @@ from checker.parser import Parser
 from checker.utils import *
 
 
-class ParserTests(TestCase):
+class ParserTestCase(TestCase):
     def setUp(self) -> None:
         self.base_url = "https://test.com"
 
@@ -124,7 +124,7 @@ class ParserTests(TestCase):
         self.assertIsNone(parser.images_miss_alt)
 
 
-class UtilsTest(TestCase):
+class UtilsTestCase(TestCase):
     def setUp(self) -> None:
         self.base_url = "https://test.com"
 
