@@ -153,7 +153,7 @@ def get_page_rank(client: Session, domain: str) -> int:
         result: dict = r.json()["response"][0]
         if result["status_code"] == 200:
             return int(result["rank"])
-    except HTTPError as e:
+    except (HTTPError, JSONDecodeError) as e:
         print(f"Failed to get page rank: {e}")
 
     return 0
