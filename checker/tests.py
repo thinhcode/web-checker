@@ -1,11 +1,9 @@
-from json import JSONDecodeError
 from unittest.mock import MagicMock, patch
 
 from django.test import TestCase, override_settings
-from requests.exceptions import HTTPError
 
 from checker.parser import Parser
-from checker.utils import get_robots_link, get_sitemap_links, verify_captcha
+from checker.utils import *
 
 
 class ParserTests(TestCase):
@@ -152,7 +150,7 @@ class UtilsTest(TestCase):
         self.assertFalse(verify_captcha("response", "127.0.0.1"))
 
     @override_settings(DEBUG=True)
-    def test_verify_captcha_in_debug(self) -> None:
+    def test_verify_captcha_with_debug(self) -> None:
         self.assertTrue(verify_captcha("response", "127.0.0.1"))
 
     @patch("checker.utils.requests")
@@ -217,3 +215,78 @@ class UtilsTest(TestCase):
         mock_get_response.raise_for_status.side_effect = HTTPError()
         mock_session.get.return_value = mock_get_response
         self.assertIsNone(get_sitemap_links(mock_session, self.base_url, f"{self.base_url}/robots.txt"))
+
+    @patch("checker.utils.requests")
+    def test_check_broken_link(self, mock_requests) -> None:
+        self.assertEqual(check_broken_link(mock_requests, self.base_url), None)
+
+    def test_check_broken_link_with_http_error(self) -> None:
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = HTTPError()
+
+        mock_session = MagicMock()
+        mock_session.head.return_value = mock_response
+        self.assertEqual(check_broken_link(mock_session, self.base_url), self.base_url)
+
+    def test_check_broken_link_with_request_error(self) -> None:
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = RequestException()
+
+        mock_session = MagicMock()
+        mock_session.head.return_value = mock_response
+        self.assertEqual(check_broken_link(mock_session, self.base_url), None)
+
+    @patch("checker.utils.check_broken_link")
+    def test_get_broken_links(self, mock_check_broken_link) -> None:
+        mock_check_broken_link.return_value = self.base_url
+
+        mock_session = MagicMock()
+        self.assertListEqual(get_broken_links(mock_session, [self.base_url]), [self.base_url])
+
+    @patch("checker.utils.check_broken_link")
+    def test_get_broken_links_with_none(self, mock_check_broken_link) -> None:
+        mock_check_broken_link.return_value = None
+
+        mock_session = MagicMock()
+        self.assertIsNone(get_broken_links(mock_session, [self.base_url]))
+
+    @patch("checker.utils.requests")
+    def test_get_broken_links_with_empty_links(self, mock_requests) -> None:
+        self.assertIsNone(get_broken_links(mock_requests, []))
+
+    def test_get_page_rank(self) -> None:
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"response": [{"status_code": 200, "rank": 1}]}
+
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        self.assertEqual(get_page_rank(mock_session, self.base_url), 1)
+
+    def test_get_page_rank_with_http_error(self) -> None:
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = HTTPError()
+
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        self.assertEqual(get_page_rank(mock_session, self.base_url), 0)
+
+    def test_get_page_rank_with_json_error(self) -> None:
+        mock_response = MagicMock()
+        mock_response.json.side_effect = JSONDecodeError("", "", 0)
+
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        self.assertEqual(get_page_rank(mock_session, self.base_url), 0)
+
+    def test_get_page_rank_with_not_found(self) -> None:
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"response": [{"status_code": 404}]}
+
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        self.assertEqual(get_page_rank(mock_session, self.base_url), 0)
+
+    @override_settings(DEBUG=True)
+    def test_get_page_rank_with_debug(self) -> None:
+        mock_session = MagicMock()
+        self.assertEqual(get_page_rank(mock_session, self.base_url), 0)
