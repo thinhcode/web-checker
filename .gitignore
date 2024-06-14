@@ -4,6 +4,7 @@ __pycache__/
 static_root/
 venv/
 
+*.coverage
 *.iml
 *.sqlite3
 configs.ini

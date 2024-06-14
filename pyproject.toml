@@ -11,19 +11,38 @@ package-mode = false
 python = "^3.10"
 django = "~5.0"
 lxml = "~5.2"
-requests = "~2.31"
+requests = "~2.32"
 
 
 [tool.poetry.group.deploy.dependencies]
-uvicorn = "~0.29"
+uvicorn = "~0.30"
 
 
 [tool.poetry.group.dev.dependencies]
 black = "~24.4"
 
+
+[tool.poetry.group.test.dependencies]
+coverage = "~7.5"
+
 [tool.black]
 line-length = 120
 target-version = ["py312"]
+
+[tool.coverage.run]
+branch = true
+omit = [
+  "*/migrations/*",
+  "src/*",
+  "*/__init__.py",
+  "*/tests.py",
+  "manage.py",
+]
+source = ["."]
+
+[tool.coverage.report]
+skip_covered = false
+skip_empty = true
 
 [build-system]
 requires = ["poetry-core"]

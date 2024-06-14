@@ -108,7 +108,7 @@ class Parser:
 
         # Add scheme
         if link.startswith("//"):
-            return self.base_url.split(":")[0] + "//" + link.lstrip("/")
+            return self.base_url.split(":")[0] + "://" + link.lstrip("/")
 
         return link
 

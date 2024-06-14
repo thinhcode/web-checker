@@ -58,7 +58,7 @@ def get_robots_link(client: Session, base_url: str) -> Optional[str]:
         return None
 
 
-def get_sitemap_links(client: Session, base_url: str, robots_url: str) -> Optional[list[str]]:
+def get_sitemap_links(client: Session, base_url: str, robots_url: Optional[str]) -> Optional[list[str]]:
     """
     Get sitemap links.
 
@@ -153,7 +153,7 @@ def get_page_rank(client: Session, domain: str) -> int:
         result: dict = r.json()["response"][0]
         if result["status_code"] == 200:
             return int(result["rank"])
-    except HTTPError as e:
+    except (HTTPError, JSONDecodeError) as e:
         print(f"Failed to get page rank: {e}")
 
     return 0
